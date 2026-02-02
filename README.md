@@ -4,8 +4,13 @@ This repository contains the MATLAB implementation referenced in the technical n
 
 ## Abstract
 
-“This technical note presents the derivation, validation, and application of a *three-node torsional spring (3NTS)* element for the analysis of bar-linked, reconfigurable structures. The 3NTS element assigns rotational stiffness to a joint  (node) of two axial force members (bars) in truss-like assemblies. This element avoids the use of rotational degrees of freedom by recasting its resisting moment into equivalent nodal forces, which are consistent with global equilibrium, thereby keeping the model size compact and computationally efficient. The 3NTS is integrated into standard non-linear solvers to simulate large-displacement response and validated against analytical solutions of two benchmark examples: the simplest 3NTS structure and the buckling of a vertical column. We further apply the framework to a reconfigurable truss structure from our previous work to illustrate potential functional use cases and outline its broader applicability to metamaterials, kirigami systems, and biomechanical assemblies. An open-source matrix structural analysis tool implementing the 3NTS and axial force members is made available with this note.”
+>This technical note presents the derivation, validation, and application of a *three-node torsional spring (3NTS)* element for the analysis of bar-linked, reconfigurable structures. The 3NTS element assigns rotational stiffness to a joint  (node) of two axial force members (bars) in truss-like assemblies. This element avoids the use of rotational degrees of freedom by recasting its resisting moment into equivalent nodal forces, which are consistent with global equilibrium, thereby keeping the model size compact and computationally efficient. The 3NTS is integrated into standard non-linear solvers to simulate large-displacement response and validated against analytical solutions of two benchmark examples: the simplest 3NTS structure and the buckling of a vertical column. We further apply the framework to a reconfigurable truss structure from our previous work to illustrate potential functional use cases and outline its broader applicability to metamaterials, kirigami systems, and biomechanical assemblies. An open-source matrix structural analysis tool implementing the 3NTS and axial force members is made available with this note.”
 
+## Citing this work
+
+If you publish results that leverage this codebase, please cite the accompanying technical note on the 3NTS element. Include a pointer to this repository so other researchers can reproduce your simulations.
+> Patil, H. Y., and Filipov, E. T. (February 2, 2026). "Three-Node Torsional Spring Element Formulation for the Analysis of Reconfigurable Bar-Linked Structures." ASME. J. Appl. Mech. March 2026; 93(3): 034502. <https://doi.org/10.1115/1.4070821>
+> 
 ## Capabilities
 
 - Assemble hybrid bar–spring models with arbitrary connectivity by combining loaders in `structures/` with the 3NTS element (`core/springStiffness.m`).
@@ -78,8 +83,3 @@ Both scripts add the necessary paths automatically; run them directly from MATLA
 - Update or duplicate the loaders in `structures/` to explore new geometries. Since the solvers operate on the `params` struct, keeping field names consistent is all that is required.
 - The full list of parameters (including solver histories such as `delta`, `P`, `alpha`, `axialF`, and residuals) is documented in [`variableReference.md`](variableReference.md). Use it as a reference when adding new solvers, plotting routines, or exporting data.
 - Post-processing functions operate on the `results` struct returned by any solver, so custom scripts can create additional plots by accessing the same fields.
-
-## Citing this work
-
-If you publish results that leverage this codebase, please cite the accompanying technical note on the 3NTS element. Include a pointer to this repository so other researchers can reproduce your simulations.
-> Patil, H. Y., and Filipov, E. T. (February 2, 2026). "Three-Node Torsional Spring Element Formulation for the Analysis of Reconfigurable Bar-Linked Structures." ASME. J. Appl. Mech. March 2026; 93(3): 034502. <https://doi.org/10.1115/1.4070821>
