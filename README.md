@@ -82,4 +82,4 @@ Both scripts add the necessary paths automatically; run them directly from MATLA
 ## Citing this work
 
 If you publish results that leverage this codebase, please cite the accompanying technical note on the 3NTS element. Include a pointer to this repository so other researchers can reproduce your simulations.
-> Patil, H. Y. and Filipov, E. T. (In press) Three-node torsional spring element formulation for the analysis of reconfigurable bar-linked structures. ASME Journal of Applied Mechanics
+> Patil, H. Y., and Filipov, E. T. (February 2, 2026). "Three-Node Torsional Spring Element Formulation for the Analysis of Reconfigurable Bar-Linked Structures." ASME. J. Appl. Mech. March 2026; 93(3): 034502. <https://doi.org/10.1115/1.4070821>

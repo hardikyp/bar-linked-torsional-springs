@@ -102,7 +102,7 @@ for incr = 1:(numSteps + 1)
     
     % -- Write frame and clear for next frame -- %
     try
-        frame = getframe(ax);
+        frame = getframe(fig);
     catch
         % Fallback for some headless configs
         img = print(fig, '-RGBImage');
