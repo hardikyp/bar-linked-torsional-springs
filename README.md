@@ -9,7 +9,7 @@ This repository contains the MATLAB implementation referenced in the technical n
 ## Citing this work
 
 If you publish results that leverage this codebase, please cite the accompanying technical note on the 3NTS element. Include a pointer to this repository so other researchers can reproduce your simulations.
-> Patil, H. Y., and Filipov, E. T. (February 2, 2026). "Three-Node Torsional Spring Element Formulation for the Analysis of Reconfigurable Bar-Linked Structures." ASME. J. Appl. Mech. March 2026; 93(3): 034502. <https://doi.org/10.1115/1.4070821>
+> Patil, H. Y., and Filipov, E. T. (2026). "Three-Node Torsional Spring Element Formulation for the Analysis of Reconfigurable Bar-Linked Structures." ASME. J. Appl. Mech. March 2026; 93(3): 034502. <https://doi.org/10.1115/1.4070821>
 > 
 ## Capabilities
 
@@ -48,11 +48,8 @@ If you publish results that leverage this codebase, please cite the accompanying
 
 | Choice | Function | Purpose |
 |---|---|---|
-| `0` | `eigenValueAnalysis` | Linear eigenvalue extraction on the free DOF stiffness matrix for quick stability checks. |
-| `1` | `elasticFirstOrder` | Single-step linear elastic solution. |
-| `2` | `eulerSolver` | Incremental load-updating with Euler’s method. |
-| `3` | `loadControlSolver` | Newton–Raphson load control with tangent stiffness updates and residual monitoring. |
-| `4` | `dispControlSolver` | Arc-length (displacement-controlled) solver with optional automatic load-step sizing. |
+| `0` | `solverLCM` | Newton–Raphson load control with tangent stiffness updates and residual monitoring. |
+| `1` | `solverALCM` | Arc-length control method solver with optional automatic load-step sizing. |
 
 ### Predefined structures (menu in `main.m`)
 

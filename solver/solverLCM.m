@@ -18,7 +18,7 @@
 %                     like forces, displacements, etc.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [outParams] = loadControlSolver(params)
+function [outParams] = solverLCM(params)
 % Unpack encapsulated input parameters
 links = params.links;
 springs = params.springs;
@@ -49,15 +49,14 @@ Pref = loadVector(force, reshapeIdx);
 maxIncr = 100;
 maxIter = 100;
 lambda = ones(maxIncr, 1) / 10;
-dDelta = zeros(nNodes * nDof, maxIter, maxIncr);
-delta = zeros(nNodes * nDof, maxIncr + 1);
+dU = zeros(nNodes * nDof, maxIter, maxIncr);
+U = zeros(nNodes * nDof, maxIncr + 1);
 dP = zeros(nNodes * nDof, maxIncr);
 P = zeros(nNodes * nDof, maxIncr + 1);
 barIntForce = zeros(nNodes * nDof, maxIncr + 1);
 sprIntForce = zeros(nNodes * nDof, maxIncr + 1);
 axialF = zeros(nNodes * nDof, maxIncr + 1);
-errTol = 1e-12;
-err = 10;
+errTol = 1e-7;
 nodeLoc = zeros(nNodes, nDof, maxIncr + 1);
 nodeLoc(:, :, 1) = coords;
 coordsPrev = coords;
@@ -65,6 +64,7 @@ nodeForce = zeros(nNodes, nDof, maxIncr + 1);
 
 for i = 1:maxIncr
     j = 1;
+    err = 10;
     dP(:, i) = Pref * lambda(i);
     P(:, i + 1) = P(:, i) + dP(:, i);
     R = zeros(nNodes * nDof, 1);
@@ -85,31 +85,31 @@ for i = 1:maxIncr
                                                     mapSprings, axialF, i);
         [Kff, Ksf] = partitionStiffness(kSystem, nFree);
 
-        % Update internal member forces based on dDelta applied
+        % Update internal member forces based on dU applied
         barIntForce(:, i + 1) = barIntForce(:, i + 1) + intF(:, 1);
         sprIntForce(:, i + 1) = sprIntForce(:, i + 1) + intF(:, 2);
         intForce = barIntForce(:, i + 1) + sprIntForce(:, i + 1);
 
         if j == 1
-            dDelta(1:nFree, j, i) = Kff \ dP(1:nFree, i);
+            dU(1:nFree, j, i) = Kff \ dP(1:nFree, i);
         else
             R = P(:, i + 1) - intForce;
-            dDelta(1:nFree, j, i) = Kff \ R(1:nFree);
+            dU(1:nFree, j, i) = Kff \ R(1:nFree);
         end
 
-        dP((nFree + 1):end, j, i) = Ksf * dDelta(1:nFree, j, i);
+        dP((nFree + 1):end, j, i) = Ksf * dU(1:nFree, j, i);
         
         % Update coordinates, bar lengths and displacements
         coordsPrev = coords;
-        coords = coords + reshape(dDelta(reshapeIdx, j, i), nDof, nNodes).';
+        coords = coords + reshape(dU(reshapeIdx, j, i), nDof, nNodes).';
         [L, theta] = barInfo(coords, links);
-        delta(:, i + 1) = delta(:, i) + sum(dDelta(:, 1:j, i), [2, 3]);
+        U(:, i + 1) = U(:, i) + sum(dU(:, 1:j, i), [2, 3]);
 
         % Error calculation
         if j > 1
             err = max(norm(R(1:nFree)), ...
-                  norm(dDelta(:, j, i)) / sqrt(nFree) / ...
-                  max(abs(delta(:, i + 1))));
+                  norm(dU(:, j, i)) / sqrt(nFree) / ...
+                  max(abs(U(:, i + 1))));
         end
         
         % Print progress
@@ -119,9 +119,6 @@ for i = 1:maxIncr
     end
     nodeLoc(:, :, i + 1) = coords;
     nodeForce(:, :, i + 1) = reshape(P(reshapeIdx, i + 1), nDof, nNodes).';
-    
-    % Reset error
-    err = 10;
 end
 
 % Encapsulate results
@@ -149,7 +146,7 @@ outParams = struct('links', links, ...
                    ... % --- Results --- %
                    'numSteps', maxIncr, ...
                    'P', P, ...
-                   'delta', delta, ...
+                   'U', U, ...
                    'nodeForce', nodeForce, ...
                    'nodeLoc', nodeLoc);
 end

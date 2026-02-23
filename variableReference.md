@@ -9,7 +9,7 @@ This repository revolves around MATLAB implementations of axial bar elements cou
 | `inputStructure` | struct | `main.m`, solvers | Encapsulates geometry, material data, connectivity, and precomputed indexing. Each `load*.m` function populates the fields listed in later tables. |
 | `inputStructureName` | string | `main.m`, `plotStructure` | Short tag for naming videos and figures (e.g., `"VertCol"`). |
 | `simType` | scalar double | `main.m` | Menu choice (0–4) selecting the solver (eigenvalue, first-order, Euler, load control, displacement control). |
-| `results` / `outParams` | struct | solvers, `post/` | Solver output that contains the original `params` plus histories (`delta`, `P`, `nodeLoc`, energies, etc.). |
+| `results` / `outParams` | struct | solvers, `post/` | Solver output that contains the original `params` plus histories (`U`, `P`, `nodeLoc`, energies, etc.). |
 
 ## Geometry, connectivity & material properties (loader outputs)
 | Variable | Type / Size | Meaning |
@@ -48,8 +48,8 @@ This repository revolves around MATLAB implementations of axial bar elements cou
 | `T` | `4 × 4` double | Direction cosine matrix from `transformationMatrix`. |
 | `Pref` | `totalDof × 1` double | Full load vector assembled from `force` via `loadVector`. Scaled to form incremental loads. |
 | `P`, `dP` | `totalDof × (maxIncr+1)` and `totalDof × maxIncr` | Total and incremental load histories. In nonlinear solvers `dP` also stores reactions for restrained DOFs. |
-| `delta`, `dDelta` | `totalDof × (maxIncr+1)` and `totalDof × maxIter × maxIncr` | Total and incremental displacement histories. |
-| `nodeLoc` | `nNodes × nDof × (maxIncr+1)` | Nodal coordinates after each increment (`coords` + reshaped `delta`). |
+| `U`, `dU` | `totalDof × (maxIncr+1)` and `totalDof × maxIter × maxIncr` | Total and incremental displacement histories. |
+| `nodeLoc` | `nNodes × nDof × (maxIncr+1)` | Nodal coordinates after each increment (`coords` + reshaped `U`). |
 | `nodeForce` | `nNodes × nDof × (maxIncr+1)` | Reaction + applied forces converted back to nodal ordering for plotting. |
 | `barIntForce`, `sprIntForce` | `totalDof × (maxIncr+1)` | Accumulated internal nodal forces caused by bars and springs, tracked for residual calculations and energy plots. |
 | `intF` | `totalDof × 2` double | Column 1 = new bar contribution, column 2 = spring contribution, from `globalStiffnessNL`. |
@@ -66,7 +66,7 @@ This repository revolves around MATLAB implementations of axial bar elements cou
 | `R` | `nFree × 1` double | Residual force vector (`external - internal`) for Newton iterations. |
 | `err`, `errTol` | scalars | Current residual/displacement norm and associated stopping tolerance. |
 | `coordsPrev` | `nNodes × 2` | Last converged coordinates; needed for incremental strain evaluation in `barForceRec`. |
-| `dDeltaSD`, `dDeltaDD`, `dDeltaSD11` | vectors | Secant, dynamic, and reference displacement directions used by the arc-length algorithm to compute `lambda`. |
+| `dUP`, `dUR`, `dUSD11` | vectors | Secant, dynamic, and reference displacement directions used by the arc-length algorithm to compute `lambda`. |
 | `S` | `maxIncr × 1` double | Scaling history that relates first-step and subsequent secant directions for automatic load stepping. |
 | `dirSign` | scalar (+1/-1) | Tracks whether the method is following or reversing the previous displacement path when sign changes occur. |
 
@@ -86,7 +86,7 @@ This repository revolves around MATLAB implementations of axial bar elements cou
 ## Energy & plotting helpers
 | Variable | Type / Size | Meaning |
 |---|---|---|
-| `externalWork` | row vector | Cumulative work from global loads: trapezoidal integration of `P` vs `delta`. |
+| `externalWork` | row vector | Cumulative work from global loads: trapezoidal integration of `P` vs `U`. |
 | `springEnergy` | row vector | `0.5 * kT .* (alpha - alpha0).^2` per increment. |
 | `barEnergy` | row vector | Work done by bar internal forces (`barIntForce`) over incremental displacements. |
 | `energyDiff` | row vector | Absolute difference between `externalWork` and total internal energy, plotted to check conservation. |

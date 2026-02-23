@@ -59,33 +59,21 @@ end
 
 % Require user input for what simulation type to run
 disp("\nSelect solver type:");
-disp("0. Eigenvalue analysis");
-disp("1. Elastic first order solver");
-disp("2. Euler's solver");
-disp("3. Load-controlled solver (Newton-Raphson)");
-disp("4. Displacement-controlled solver (Arc Length)");
-simType = input("Enter your choice (0, 1, 2, 3 or 4): ");
-while ~ismember(simType, [0, 1, 2, 3, 4])
-    disp("Invalid choice. Please enter 0, 1, 2, 3 or 4.");
-    simType = input("Enter your choice (0, 1, 2, 3 or 4): ");
+disp("0. Load-controlled solver (Newton-Raphson)");
+disp("1. Arc Length Control Method");
+simType = input("Enter your choice (0 or 1): ");
+while ~ismember(simType, [0, 1])
+    disp("Invalid choice. Please enter 0 or 1");
+    simType = input("Enter your choice (0 or 1): ");
 end
 
 % Run simulation based on user input
-if simType == 0
-    disp("Running eigenvalue analysis...");
-    [results] = eigenValueAnalysis(inputStructure);
-elseif simType == 1
-    disp("Running elastic first order analysis...");
-    [results] = elasticFirstOrder(inputStructure);
-elseif simType == 2
-    disp("Running elastic second order analysis using Euler's algorithm...");
-    [results] = eulerSolver(inputStructure);
-elseif simType == 3
+if simType ==0
     disp("Running elastic second order analysis using load-controlled algorithm (Newton-Raphson)...");
-    [results] = loadControlSolver(inputStructure);    
-elseif simType == 4
-    disp("Running elastic second order analysis using displacement controlled algorithm (Arc-length)...");
-    [results] = dispControlSolver(inputStructure);
+    [results] = solverLCM(inputStructure);    
+elseif simType == 1
+    disp("Running elastic second order analysis using Arc-length control method algorithm...");
+    [results] = solverALCM(inputStructure);
 end
 
 % Visualize the results of structural analysis

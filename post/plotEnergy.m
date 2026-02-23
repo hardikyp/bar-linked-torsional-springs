@@ -20,23 +20,23 @@ alpha = params.alpha;
 alpha0 = params.alpha0;
 numSteps = params.numSteps;
 P = params.P;
-delta = params.delta;
+U = params.U;
 barIntForce = params.barIntForce;
 
 % Calculate external work
-externalWork = zeros(1, size(delta, 2));
-for inc = 2:size(delta, 2)
-    deltaIncr = delta(:, inc) - delta(:, inc-1);
+externalWork = zeros(1, size(U, 2));
+for inc = 2:size(U, 2)
+    UIncr = U(:, inc) - U(:, inc-1);
     PAvg = (P(:, inc) + P(:, inc-1)) / 2;
-    externalWork(inc) = externalWork(inc-1) + sum(deltaIncr .* PAvg);
+    externalWork(inc) = externalWork(inc-1) + sum(UIncr .* PAvg);
 end
 
 % Calculate internal work
-springEnergy = zeros(1, size(delta, 2));
-barEnergy = zeros(1, size(delta, 2));
+springEnergy = zeros(1, size(U, 2));
+barEnergy = zeros(1, size(U, 2));
 
 for inc = 2:(numSteps + 1)
-    dU = delta(:, inc) - delta(:, inc - 1);
+    dU = U(:, inc) - U(:, inc - 1);
     
     % Spring strain energy
     springEnergy(1, inc) = 0.5 * kT' * (alpha(:, inc) - alpha0).^2; 

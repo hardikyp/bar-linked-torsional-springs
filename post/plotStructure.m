@@ -36,20 +36,19 @@ v.FrameRate = 30;
 open(v);
 % Figure/axes (off-screen, fixed size, OpenGL)
 fig = figure('Name','Structural deformation', 'NumberTitle','off', ...
-             'Visible','off', 'Color','w', ...
-             'Units','pixels'); 
+             'Visible', 'on', 'Color','w', 'Units','pixels');
 ax = axes('Parent',fig);
-hold(ax,'on'); axis(ax,'equal'); axis(ax,'off');
 
 % Fixed limits (set once; no relayout in the loop)
 xMin = min(min(nodeLoc(:,1,:))) - 1;  xMax = max(max(nodeLoc(:,1,:))) + 1;
 yMin = min(min(nodeLoc(:,2,:))) - 1;  yMax = max(max(nodeLoc(:,2,:))) + 1;
 xlim(ax,[xMin xMax]); ylim(ax,[yMin yMax]);
+hold(ax,'on'); axis(ax,'equal'); axis(ax,'off');
 
-for incr = 1:(numSteps + 1)
+for incr = 1:20:(numSteps + 1)
     cla(ax);
-    axes(ax);
-    hold(ax,'on'); axis(ax,'equal'); axis(ax,'off');
+    % axes(ax);
+    % hold(ax,'on'); axis(ax,'equal'); axis(ax,'off');
     xlim(ax,[xMin xMax]); ylim(ax,[yMin yMax]);
     
     % -- Plot bars -- %
@@ -102,7 +101,9 @@ for incr = 1:(numSteps + 1)
     
     % -- Write frame and clear for next frame -- %
     try
-        frame = getframe(fig);
+        % frame = getframe(fig);
+        img = exportgraphics(fig, 'Resolution', 300);
+        frame = im2frame(img);
     catch
         % Fallback for some headless configs
         img = print(fig, '-RGBImage');

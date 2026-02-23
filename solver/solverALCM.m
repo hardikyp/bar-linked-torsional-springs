@@ -4,7 +4,7 @@
 % Date: October 19, 2025                                                       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% This function is an implementation of the Arc Length displacement controlled
+% This function is an implementation of the Arc Length Control Method (ALCM)
 % iterative-corrective scheme for non-linear analysis of structures.
 %
 % Inputs:
@@ -18,7 +18,7 @@
 %                     like forces, displacements, etc.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [outParams] = dispControlSolver(params)
+function [outParams] = solverALCM(params)
 % Unpack encapsulated input parameters
 links = params.links;
 springs = params.springs;
@@ -54,7 +54,7 @@ while ~ismember(autoLoadStep, [0, 1])
 end
 
 minIter = 2;
-maxIter = 100;
+maxIter = 50;
 if autoLoadStep == 1
     maxIncr = 700;
     lambda = zeros(maxIter, maxIncr);
@@ -69,8 +69,8 @@ end
 % System load vector to get Pref
 Pref = loadVector(force, reshapeIdx);
 
-dDelta = zeros(nNodes * nDof, maxIter, maxIncr);
-delta = zeros(nNodes * nDof, maxIncr + 1);
+dU = zeros(nNodes * nDof, maxIter, maxIncr);
+U = zeros(nNodes * nDof, maxIncr + 1);
 alpha = zeros(nSpr, maxIncr + 1);
 alpha(:, 1) = alpha0;
 dP = zeros(nNodes * nDof, maxIter, maxIncr);
@@ -80,16 +80,15 @@ sprIntForce = zeros(nNodes * nDof, maxIncr + 1);
 axialF = zeros(nBars, maxIncr + 1);
 S = zeros(maxIncr, 1);
 errTol = 1e-7;
-err = 10;
 nodeLoc = zeros(nNodes, nDof, maxIncr + 1);
 nodeLoc(:, :, 1) = coords;
 coordsPrev = coords;
 nodeForce = zeros(nNodes, nDof, maxIncr + 1);
-dirSign = 1;
 
 for i = 1:maxIncr
     % Reset iter counter and residual force
     j = 1;
+    err = 10;
     R = zeros(nFree, 1);
     
     % Prep internal force counters
@@ -106,26 +105,24 @@ for i = 1:maxIncr
                                                     mapSprings, axialF, i);
         [Kff, Ksf] = partitionStiffness(kSystem, nFree);
 
-        % Update internal member forces based on dDelta applied
+        % Update internal member forces based on dU applied
         barIntForce(:, i + 1) = barIntForce(:, i + 1) + intF(:, 1);
         sprIntForce(:, i + 1) = intF(:, 2);
         intForce = barIntForce(:, i + 1) + sprIntForce(:, i + 1);
         
         % Residual calculation
-        if j == 1
-            R(:) = 0;
-        else
+        if j > 1
             R = P(1:nFree, i + 1) - intForce(1:nFree, 1);
         end
-        dDeltaSD = Kff \ Pref(1:nFree);
-        dDeltaDD = Kff \ R;
+        dUP = Kff \ Pref(1:nFree);
+        dUR = Kff \ R;
 
         % Lambda updates
         if j == 1 && i == 1
-            dDeltaSD11 = dDeltaSD;
+            dUSD11 = dUP;
             S(i) = 1;
         elseif j == 1 && i ~= 1 % Auto calculate lambda(1, i)
-            S(i) = (dDeltaSD11' * Pref(1:nFree)) / (dDeltaSD' * Pref(1:nFree));
+            S(i) = (dUSD11' * Pref(1:nFree)) / (dUP' * Pref(1:nFree));
             if autoLoadStep == 1
                 if det(Kff) < 0
                     lambda(1, i) = -lambda(1, 1) * abs(S(i));
@@ -138,28 +135,27 @@ for i = 1:maxIncr
                 end
             end
         elseif j > 1 % Arc length updates
-            num = dDelta(1:nFree, 1, i)' * dDeltaDD;
-            den = dDelta(1:nFree, 1, i)' * dDeltaSD + lambda(1, i);
-            lambda(j, i) = -dirSign * num / den;
+            num = dU(1:nFree, 1, i)' * dUR;
+            den = dU(1:nFree, 1, i)' * dUP + lambda(1, i);
+            lambda(j, i) = - num / den;
         end
 
-        dDelta(1:nFree, j, i) = lambda(j, i) * dDeltaSD + dDeltaDD;
+        dU(1:nFree, j, i) = lambda(j, i) * dUP + dUR;
         dP(:, j, i) = lambda(j, i) * Pref;
-        dP((nFree + 1):end, j, i) = Ksf * dDelta(1:nFree, j, i);
+        dP((nFree + 1):end, j, i) = Ksf * dU(1:nFree, j, i);
 
         % Update coordinates and bar lengths
         coordsPrev = coords;
-        coords = coords + reshape(dDelta(reshapeIdx, j, i), nDof, nNodes).';
+        coords = coords + reshape(dU(reshapeIdx, j, i), nDof, nNodes).';
         [L, theta] = barInfo(coords, links);
         alpha(:, i + 1) = springInfo(coords, springs);
 
-        delta(:, i + 1) = delta(:, i) + sum(dDelta(:, 1:j, i), [2 3]);
+        U(:, i + 1) = U(:, i) + sum(dU(:, 1:j, i), [2 3]);
         P(:, i + 1) = P(:, i) + sum(dP(:, 1:j, i), [2 3]);
 
         % Error calculation
         if j > 1
-            trackedDisp = dDelta(:, j, i) / sqrt(nFree) / ...
-                          max(abs(delta(:, i + 1)));
+            trackedDisp = dU(:, j, i) / sqrt(nFree) / max(abs(U(:, i + 1)));
             err = max(norm(R), norm(trackedDisp));
         end
 
@@ -168,22 +164,8 @@ for i = 1:maxIncr
                 i, j, err, norm(R));
         j = j + 1;
     end
-
-    if i > 1
-        dDelta_i = sum(dDelta(1:nFree, 1:j, i), [2 3]);
-        dDelta_i_1 = sum(dDelta(1:nFree, 1:j, i - 1), [2 3]);
-        if dot(dDelta_i, dDelta_i_1) > 0
-            dirSign = 1;
-        else
-            dirSign = -1;
-            fprintf('*** Direction reversed at increment %d ***\n', i);
-        end
-    end
     nodeLoc(:, :, i + 1) = coords;
-    nodeForce(:, :, i + 1) = reshape(P(reshapeIdx, i + 1), nDof, nNodes).';
-    % Reset error
-    err = 10;
-    
+    nodeForce(:, :, i + 1) = reshape(P(reshapeIdx, i + 1), nDof, nNodes).';    
 end
 
 % Encapsulate results
@@ -213,7 +195,7 @@ outParams = struct('links', links, ...
     ... % --- Results --- %
     'numSteps', maxIncr, ...
     'P', P, ...
-    'delta', delta, ...
+    'U', U, ...
     'nodeForce', nodeForce, ...
     'nodeLoc', nodeLoc, ...
     'sprIntForce', sprIntForce, ...

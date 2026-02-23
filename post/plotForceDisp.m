@@ -15,7 +15,7 @@
 
 function plotForceDisp(params, dofList)
 % Unpack encapsulated input parameters
-delta    = params.delta;
+U        = params.U;
 P        = params.P;
 nFree    = params.nFree;
 identity = params.identity;
@@ -37,7 +37,7 @@ set(gcf, ...
 
 for k = 1:numel(dofList)
     idx = dofList(k);      % free DOF index
-    u = delta(idx, :);     % displacement history
+    u = U(idx, :);     % displacement history
     f = P(idx, :);         % load history
     
     % Find node and DOF type from identity
@@ -58,5 +58,9 @@ legend('Location', 'best', 'EdgeColor', 'none', 'BackgroundAlpha', 0);
 xlabel('Displacement', 'FontName', 'Arial', 'FontSize', 9, 'FontWeight', 'normal');
 ylabel('Load', 'FontName', 'Arial', 'FontSize', 9, 'FontWeight', 'normal');
 title('Load–Displacement Curves', 'FontName', 'Arial', 'FontSize', 9, 'FontWeight', 'normal');
+y = yline(0, 'k', 'DisplayName', '');
+x = xline(0, 'k', 'DisplayName', '');
+y.Annotation.LegendInformation.IconDisplayStyle = 'off';
+x.Annotation.LegendInformation.IconDisplayStyle = 'off';
 grid on;
 end
