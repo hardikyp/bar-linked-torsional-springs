@@ -52,7 +52,8 @@ This repository revolves around MATLAB implementations of axial bar elements cou
 | `nodeLoc` | `nNodes × nDof × (maxIncr+1)` | Nodal coordinates after each increment (`coords` + reshaped `U`). |
 | `nodeForce` | `nNodes × nDof × (maxIncr+1)` | Reaction + applied forces converted back to nodal ordering for plotting. |
 | `barIntForce`, `sprIntForce` | `totalDof × (maxIncr+1)` | Accumulated internal nodal forces caused by bars and springs, tracked for residual calculations and energy plots. |
-| `intF` | `totalDof × 2` double | Column 1 = new bar contribution, column 2 = spring contribution, from `globalStiffnessNL`. |
+| `intF` | `totalDof × 2` double | Column 1 = new bar contribution, column 2 = spring contribution, from `globalStiffness`. |
+| `intForce` | `totalDof × (maxIncr+1)` | History of total internal force at each load increment. |
 | `axialF` | `nBars × (maxIncr+1)` | Axial force history per bar; feeds `geomStiffness` and energy routines. |
 | `numSteps` | scalar | Number of increments actually executed; used by plotting utilities to loop over histories. |
 
@@ -67,7 +68,7 @@ This repository revolves around MATLAB implementations of axial bar elements cou
 | `err`, `errTol` | scalars | Current residual/displacement norm and associated stopping tolerance. |
 | `coordsPrev` | `nNodes × 2` | Last converged coordinates; needed for incremental strain evaluation in `barForceRec`. |
 | `dUP`, `dUR`, `dUSD11` | vectors | Secant, dynamic, and reference displacement directions used by the arc-length algorithm to compute `lambda`. |
-| `S` | `maxIncr × 1` double | Scaling history that relates first-step and subsequent secant directions for automatic load stepping. |
+| `CSP` | `maxIncr × 1` double | Current stiffness parameter that relates first-step and subsequent secant directions for automatic load stepping. |
 | `dirSign` | scalar (+1/-1) | Tracks whether the method is following or reversing the previous displacement path when sign changes occur. |
 
 ## Element-level helper quantities

@@ -24,7 +24,7 @@ If you publish results that leverage this codebase, please cite the accompanying
 | Path | Description |
 |---|---|
 | `core/` | Element routines (axial stiffness, geometric stiffness, spring stiffness, DOF bookkeeping, global assembly). |
-| `solver/` | Analysis algorithms (`eigenValueAnalysis`, `elasticFirstOrder`, `eulerSolver`, `loadControlSolver`, `dispControlSolver`). |
+| `solver/` | Analysis algorithms (`solverLCM`, `solverALCM`). |
 | `structures/` | Predefined problem definitions (`loadTestStructure`, `loadVertColumn`, `loadCantileverTruss`, etc.). Each returns a populated `params` struct. |
 | `post/` | Plotting helpers and drawing utilities used for videos/figures. |
 | `figures/`, `videos/` | Output folders created by the plotting routines. |
@@ -39,7 +39,7 @@ If you publish results that leverage this codebase, please cite the accompanying
 ## Quick start
 
 1. Open MATLAB and `cd` into this repository.
-2. Execute `main`. The script adds all subfolders to the path, prompts for a structure (0–5), then prompts for an analysis type (0–4).
+2. Execute `main`. The script adds all subfolders to the path, prompts for a structure (0–5), then prompts for an analysis type (0–1).
 3. After the solver finishes, review the console logs and generated plots/animations:
    - Deformation video saved to `videos/StructuralDeformation<Structure>.mp4`.
    - Energy balance and force–displacement figures shown in MATLAB (export steps are included in the plotting files if SVGs are desired).
@@ -78,5 +78,5 @@ Both scripts add the necessary paths automatically; run them directly from MATLA
 ## Customization tips
 
 - Update or duplicate the loaders in `structures/` to explore new geometries. Since the solvers operate on the `params` struct, keeping field names consistent is all that is required.
-- The full list of parameters (including solver histories such as `delta`, `P`, `alpha`, `axialF`, and residuals) is documented in [`variableReference.md`](variableReference.md). Use it as a reference when adding new solvers, plotting routines, or exporting data.
+- The full list of parameters (including solver histories such as `U`, `P`, `alpha`, `axialF`, and residuals) is documented in [`variableReference.md`](variableReference.md). Use it as a reference when adding new solvers, plotting routines, or exporting data.
 - Post-processing functions operate on the `results` struct returned by any solver, so custom scripts can create additional plots by accessing the same fields.
