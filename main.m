@@ -69,10 +69,10 @@ end
 
 % Run simulation based on user input
 if simType ==0
-    disp("Running elastic second order analysis using load-controlled algorithm (Newton-Raphson)...");
+    disp("Running analysis using load control method solver...");
     [results] = solverLCM(inputStructure);    
 elseif simType == 1
-    disp("Running elastic second order analysis using Arc-length control algorithm...");
+    disp("Running analysis using arc length control method solver...");
     [results] = solverALCM(inputStructure);
 end
 

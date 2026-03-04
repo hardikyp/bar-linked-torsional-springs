@@ -88,7 +88,7 @@ for i = 1:maxIncr
                                                   L0, theta, kT, alpha0, ... 
                                                   reshapeIdx, mapBars, ...
                                                   mapSprings, axialF, i);
-        [Kff, Ksf] = partitionStiffness(kSystem, nFree);
+        [Kff, ~] = partitionStiffness(kSystem, nFree);
 
         % Update internal member forces based on dU applied
         barIntForce(:, i + 1) = barIntForce(:, i + 1) + intF(:, 1);
@@ -104,7 +104,6 @@ for i = 1:maxIncr
 
         dU(1:nFree, j, i) = lambda(j, i) * dUP(:, j, i) + dUR(:, j, i);
         dP(:, j, i) = lambda(j, i) * PRef;
-        dP((nFree + 1):end, j, i) = Ksf * dU(1:nFree, j, i);
         
         % Update coordinates, bar lengths, forces and displacements
         coordsPrev = coords;
@@ -125,6 +124,9 @@ for i = 1:maxIncr
         fprintf('Incr: %02d, Iter: %02d, Err: %.7f\n', i, j, err);
         j = j + 1;
     end
+
+    % Add reaction forces to the global force vector
+    P(nFree:end, i + 1) = intForce(nFree:end, i + 1);
 
     % Store updated node locations and forces at the end of increment
     nodeLoc(:, :, i + 1) = coords;

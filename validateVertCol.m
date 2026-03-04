@@ -24,7 +24,7 @@ disp("Running elastic second order analysis using displacement controlled algori
 [results] = solverALCM(inputStructure);
 
 % Visualize the results of structural analysis
-% plotStructure(results, inputStructureName);
+plotStructure(results, inputStructureName);
 
 % Plot internal vs external energy
 % plotEnergy(results);
