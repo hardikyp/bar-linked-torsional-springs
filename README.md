@@ -1,8 +1,6 @@
 # Three-Node Torsional Spring Element Formulation for the Analysis of Reconfigurable Bar-Linked Structures
 
-## Authors
-- Hardik Y. Patil (hardikyp@umich.edu)
-- Evgueni T. Filipov (filipov@umich.edu)
+Authors: Hardik Y. Patil (hardikyp@umich.edu) and Evgueni T. Filipov (filipov@umich.edu)
 
 MATLAB code for nonlinear 2D bar-truss analysis with a three-node torsional spring (3NTS) element. The implementation combines axial bar elements and torsional spring elements without introducing rotational DOFs, then solves large-displacement response with either load control (Newton-Raphson) or arc-length control.
 
