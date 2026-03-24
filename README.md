@@ -4,8 +4,8 @@
 
 MATLAB code for nonlinear 2D bar-truss analysis with a three-node torsional spring (3NTS) element. The implementation combines axial bar elements and torsional spring elements without introducing rotational DOFs, then solves large-displacement response with either load control (Newton-Raphson) or arc-length control.
 
-![Three-node torsional spring element schematics](figures/01-spring-stiffness-80mm.jpg)
-A schematic representation of the three-node rotational spring unit depicting the nodal displacements.
+> ![Three-node torsional spring element schematics](figures/01-spring-stiffness-80mm.jpg)
+> A schematic representation of the three-node rotational spring unit depicting the nodal displacements.
 
 ## Abstract
 
@@ -94,8 +94,8 @@ The deformation video is saved to:
   - Plots force-displacement response (`plotForceDisp(results, [1])`)
   - Overlays analytical buckling curve
 
-![Benchmark examples used for the validation of torsional srping unit](figures/02-validation-160mm.jpg)
-Validation of the simulated behavior of bar-linked structures with torsional spring elements against their respective analytical solutions. (a) Simplest structure with a torsional spring element; (b) Comparison of analytical and simulated load–displacement responses for the structure in (a); (c) Simulated external work and stacked internal strain energies (spring and bars) over load increments for thestructure in (a); (d) Buckling of a bar-linked vertical column comprising of two bars and a torsionalspring element at the central joint; (e) Comparison of analytical and simulated load–displacement re-sponses for the structure in (d); (f) Simulated external work and stacked internal strain energies (springand bars) over load increments for the structure in (d).
+> ![Benchmark examples used for the validation of torsional srping unit](figures/02-validation-160mm.jpg)
+> Validation of the simulated behavior of bar-linked structures with torsional spring elements against their respective analytical solutions. (a) Simplest structure with a torsional spring element; (b) Comparison of analytical and simulated load–displacement responses for the structure in (a); (c) Simulated external work and stacked internal strain energies (spring and bars) over load increments for thestructure in (a); (d) Buckling of a bar-linked vertical column comprising of two bars and a torsionalspring element at the central joint; (e) Comparison of analytical and simulated load–displacement re-sponses for the structure in (d); (f) Simulated external work and stacked internal strain energies (springand bars) over load increments for the structure in (d).
 
 ## Structure loader contract
 
