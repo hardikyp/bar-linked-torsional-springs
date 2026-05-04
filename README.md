@@ -110,7 +110,9 @@ Each loader in `structures/` builds and returns a `params` struct containing:
 
 The same field contract is used by both nonlinear solvers.
 
-## Notes
+> [!NOTE]
+> - Documentation of all variables used in this codebase can be found in ['variableReference.md'](variableReference.md) 
+> - Plot export-to-SVG lines are included as commented code in plotting files.
 
-- Documentation of all variables used in this codebase can be found in ['variableReference.md'](variableReference.md) 
-- Plot export-to-SVG lines are included as commented code in plotting files.
+> [!IMPORTANT]
+> Do not change the name of this repository
