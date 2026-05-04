@@ -114,5 +114,5 @@ The same field contract is used by both nonlinear solvers.
 > - Documentation of all variables used in this codebase can be found in ['variableReference.md'](variableReference.md) 
 > - Plot export-to-SVG lines are included as commented code in plotting files.
 
-> [!IMPORTANT]
+> [!CAUTION]
 > Do not change the name of this repository
